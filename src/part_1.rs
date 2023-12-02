@@ -35,18 +35,11 @@ mod tests {
 
     #[test]
     fn example_lines() {
-        let input = [
-            ("1abc2", 12),
-            ("pqr3stu8vwx", 38),
-            ("a1b2c3d4e5f", 15),
-            ("treb7uchet", 77),
-            ("9s", 99),
-        ];
-
-        for (i, r) in input {
-            let value = get_calibration_line(i);
-            assert_eq!(value, Ok(r));
-        }
+        assert_eq!(get_calibration_line("1abc2"), Ok(12));
+        assert_eq!(get_calibration_line("pqr3stu8vwx"), Ok(38));
+        assert_eq!(get_calibration_line("a1b2c3d4e5f"), Ok(15));
+        assert_eq!(get_calibration_line("treb7uchet"), Ok(77));
+        assert_eq!(get_calibration_line("9s"), Ok(99));
     }
 
     #[test]
