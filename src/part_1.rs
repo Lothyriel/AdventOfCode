@@ -16,16 +16,7 @@ fn to_digit(byte: Option<u8>) -> Result<usize, Error> {
     let byte = byte.ok_or(Error::NumberNotFound)?;
 
     match byte {
-        b'0' => Ok(0),
-        b'1' => Ok(1),
-        b'2' => Ok(2),
-        b'3' => Ok(3),
-        b'4' => Ok(4),
-        b'5' => Ok(5),
-        b'6' => Ok(6),
-        b'7' => Ok(7),
-        b'8' => Ok(8),
-        b'9' => Ok(9),
+        b'0'..=b'9' => Ok(byte as usize - 48),
         _ => Err(Error::Parsing),
     }
 }
