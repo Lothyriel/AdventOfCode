@@ -1,136 +1,102 @@
+type Bytes<'a> = core::iter::Peekable<core::str::Bytes<'a>>;
+
 pub fn get_calibration_value(input: &str) -> usize {
     input.lines().map(get_calibration_line).sum()
 }
 
 fn get_calibration_line(input: &str) -> usize {
-    let first = {
-        let mut idx = 0;
+    let tokens = get_tokens(&mut input.bytes().peekable());
 
-        loop {
-            if let Ok(v) = parse(&mut input.bytes().skip(idx)) {
-                break v;
-            }
+    let mut numbers = tokens.iter().filter_map(|t| match t {
+        Token::Number(n) => Some(n),
+        Token::Character(_) => None,
+    });
 
-            idx += 1;
-        }
-    };
+    let first = numbers.next().expect("Expected at least a number");
 
-    let last = {
-        let mut idx = 0;
-        let mut last = first;
-
-        loop {
-            let a = parse(&mut input.bytes().skip(idx));
-            idx += 1;
-            match a {
-                Ok(v) => last = v,
-                Err(e) => match e {
-                    State::NotNumber(_) => continue,
-                    State::End => break last,
-                },
-            }
-        }
-    };
+    let last = numbers.next_back().unwrap_or(first);
 
     first * 10 + last
 }
 
-fn parse(bytes: &mut impl Iterator<Item = u8>) -> Result<usize, State> {
-    let mut c = || bytes.next().ok_or(State::End);
+fn get_tokens(bytes: &mut core::iter::Peekable<core::str::Bytes<'_>>) -> Vec<Token> {
+    let mut tokens = Vec::new();
 
-    let first = c()?;
+    while bytes.peek().is_some() {
+        if let Some(t) = parse(bytes) {
+            tokens.push(t);
+        }
+    }
+
+    tokens
+}
+
+fn parse(bytes: &mut Bytes<'_>) -> Option<Token> {
+    let first = bytes.next()?;
 
     match first {
-        b'0'..=b'9' => Ok(first as usize - 48),
-        b'o' => match c()? {
-            b'n' => match c()? {
-                b'e' => Ok(1),
-                n => Err(State::NotNumber(n as char)),
-            },
-            n => Err(State::NotNumber(n as char)),
+        b'0'..=b'9' => Some(Token::Number(first as usize - 48)),
+        b'o' => try_parse("ne", bytes),
+        b't' => match bytes.peek()? {
+            b'w' => try_parse("wo", bytes),
+            b'h' => try_parse("hree", bytes),
+            _ => None,
         },
-        b't' => match c()? {
-            b'w' => match c()? {
-                b'o' => Ok(2),
-                n => Err(State::NotNumber(n as char)),
-            },
-            b'h' => match c()? {
-                b'r' => match c()? {
-                    b'e' => match c()? {
-                        b'e' => Ok(3),
-                        n => Err(State::NotNumber(n as char)),
-                    },
-                    n => Err(State::NotNumber(n as char)),
-                },
-                n => Err(State::NotNumber(n as char)),
-            },
-            n => Err(State::NotNumber(n as char)),
+        b'f' => match bytes.peek()? {
+            b'o' => try_parse("our", bytes),
+            b'i' => try_parse("ive", bytes),
+            _ => None,
         },
-        b'f' => match c()? {
-            b'o' => match c()? {
-                b'u' => match c()? {
-                    b'r' => Ok(4),
-                    n => Err(State::NotNumber(n as char)),
-                },
-                n => Err(State::NotNumber(n as char)),
-            },
-            b'i' => match c()? {
-                b'v' => match c()? {
-                    b'e' => Ok(5),
-                    n => Err(State::NotNumber(n as char)),
-                },
-                n => Err(State::NotNumber(n as char)),
-            },
-            n => Err(State::NotNumber(n as char)),
+        b's' => match bytes.peek()? {
+            b'i' => try_parse("ix", bytes),
+            b'e' => try_parse("even", bytes),
+            _ => None,
         },
-        b's' => match c()? {
-            b'i' => match c()? {
-                b'x' => Ok(6),
-                n => Err(State::NotNumber(n as char)),
-            },
-            b'e' => match c()? {
-                b'v' => match c()? {
-                    b'e' => match c()? {
-                        b'n' => Ok(7),
-                        n => Err(State::NotNumber(n as char)),
-                    },
-                    n => Err(State::NotNumber(n as char)),
-                },
-                n => Err(State::NotNumber(n as char)),
-            },
-            n => Err(State::NotNumber(n as char)),
-        },
-        b'e' => match c()? {
-            b'i' => match c()? {
-                b'g' => match c()? {
-                    b'h' => match c()? {
-                        b't' => Ok(8),
-                        n => Err(State::NotNumber(n as char)),
-                    },
-                    n => Err(State::NotNumber(n as char)),
-                },
-                n => Err(State::NotNumber(n as char)),
-            },
-            n => Err(State::NotNumber(n as char)),
-        },
-        b'n' => match c()? {
-            b'i' => match c()? {
-                b'n' => match c()? {
-                    b'e' => Ok(9),
-                    n => Err(State::NotNumber(n as char)),
-                },
-                n => Err(State::NotNumber(n as char)),
-            },
-            n => Err(State::NotNumber(n as char)),
-        },
-        n => Err(State::NotNumber(n as char)),
+        b'e' => try_parse("ight", bytes),
+        b'n' => try_parse("ine", bytes),
+        _ => None,
     }
 }
 
+fn try_parse(expected: &str, bytes: &mut Bytes<'_>) -> Option<Token> {
+    for e in expected.bytes() {
+        // println!(
+        //     "expected: {}, got: {:?}",
+        //     e as char,
+        //     bytes.peek().map(|c| *c as char)
+        // );
+        if e == *bytes.peek()? {
+            bytes.next()?;
+        } else {
+            return None;
+        }
+    }
+
+    const MAPPINGS: [(&str, usize); 9] = [
+        ("ne", 1),
+        ("wo", 2),
+        ("hree", 3),
+        ("our", 4),
+        ("ive", 5),
+        ("ix", 6),
+        ("even", 7),
+        ("ight", 8),
+        ("ine", 9),
+    ];
+
+    let number = MAPPINGS
+        .iter()
+        .find(|i| i.0 == expected)
+        .expect("Should contain this item")
+        .1;
+
+    Some(Token::Number(number))
+}
+
 #[derive(Debug)]
-pub enum State {
-    NotNumber(char),
-    End,
+pub enum Token {
+    Number(usize),
+    Character(u8),
 }
 
 #[cfg(test)]
