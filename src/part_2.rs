@@ -169,6 +169,6 @@ mod tests {
 
         let value = get_calibration_value(input);
 
-        assert_eq!(value, 0);
+        assert_eq!(value, 54265);
     }
 }
