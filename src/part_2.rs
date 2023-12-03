@@ -72,23 +72,19 @@ fn try_parse(expected: &str, bytes: &mut Bytes<'_>) -> Option<Token> {
         }
     }
 
-    const MAPPINGS: [(&str, usize); 9] = [
-        ("ne", 1),
-        ("wo", 2),
-        ("hree", 3),
-        ("our", 4),
-        ("ive", 5),
-        ("ix", 6),
-        ("even", 7),
-        ("ight", 8),
-        ("ine", 9),
-    ];
 
-    let number = MAPPINGS
-        .iter()
-        .find(|i| i.0 == expected)
-        .expect("Should contain this item")
-        .1;
+    let number = match expected {
+        "one" => 1,
+        "two" => 2,
+        "three" => 3,
+        "four" => 4,
+        "five" => 5,
+        "six" => 6,
+        "seven" => 7,
+        "eight" => 8,
+        "nine" => 9,
+        _ => panic!("Should match an number"),
+    };
 
     Some(Token::Number(number))
 }
@@ -133,6 +129,7 @@ mod tests {
     fn example_numbers_sharing_letters() {
         assert_eq!(get_calibration_line("28gtbkszmrtmnineoneightmx"), 28);
     }
+
     #[test]
     fn puzzle() {
         let input = include_str!("input");
