@@ -1,6 +1,6 @@
 use std::collections::VecDeque;
 
-pub fn get_calibration_value(input: &str) -> usize {
+pub fn get_calibration(input: &str) -> usize {
     input.lines().map(get_calibration_line).sum()
 }
 
@@ -137,7 +137,7 @@ mod tests {
                        zoneight234
                        7pqrstsixteen"#;
 
-        let value = get_calibration_value(input);
+        let value = get_calibration(input);
 
         assert_eq!(value, 281);
     }
@@ -172,7 +172,7 @@ mod tests {
     fn puzzle() {
         let input = include_str!("input");
 
-        let value = get_calibration_value(input);
+        let value = get_calibration(input);
 
         assert_eq!(value, 54265);
     }
