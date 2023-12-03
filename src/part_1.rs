@@ -1,32 +1,18 @@
-pub fn get_calibration_value(input: &str) -> Result<usize, Error> {
+pub fn get_calibration_value(input: &str) -> usize {
     input.lines().map(get_calibration_line).sum()
 }
 
-fn get_calibration_line(input: &str) -> Result<usize, Error> {
-    let mut numbers = input.bytes().filter(|b| b.is_ascii_digit());
+fn get_calibration_line(input: &str) -> usize {
+    let mut numbers = input.bytes().filter_map(|b| match b {
+        b'0'..=b'9' => Some(b as usize - 48),
+        _ => None,
+    });
 
-    let first = to_digit(numbers.next())?;
+    let first = numbers.next().expect("Expected at least a number");
 
-    let last = to_digit(numbers.next_back()).unwrap_or(first);
+    let last = numbers.next_back().unwrap_or(first);
 
-    Ok(first * 10 + last)
-}
-
-fn to_digit(byte: Option<u8>) -> Result<usize, Error> {
-    let byte = byte.ok_or(Error::NumberNotFound)?;
-
-    match byte {
-        b'0'..=b'9' => Ok(byte as usize - 48),
-        _ => Err(Error::Parsing),
-    }
-}
-
-#[derive(thiserror::Error, Debug, PartialEq)]
-pub enum Error {
-    #[error("Couldn't find a number in the input line")]
-    NumberNotFound,
-    #[error("Couldn't convert to a digit representation")]
-    Parsing,
+    first * 10 + last
 }
 
 #[cfg(test)]
@@ -35,11 +21,11 @@ mod tests {
 
     #[test]
     fn example_lines() {
-        assert_eq!(get_calibration_line("1abc2"), Ok(12));
-        assert_eq!(get_calibration_line("pqr3stu8vwx"), Ok(38));
-        assert_eq!(get_calibration_line("a1b2c3d4e5f"), Ok(15));
-        assert_eq!(get_calibration_line("treb7uchet"), Ok(77));
-        assert_eq!(get_calibration_line("9s"), Ok(99));
+        assert_eq!(get_calibration_line("1abc2"), 12);
+        assert_eq!(get_calibration_line("pqr3stu8vwx"), 38);
+        assert_eq!(get_calibration_line("a1b2c3d4e5f"), 15);
+        assert_eq!(get_calibration_line("treb7uchet"), 77);
+        assert_eq!(get_calibration_line("9s"), 99);
     }
 
     #[test]
@@ -51,7 +37,7 @@ mod tests {
 
         let value = get_calibration_value(input);
 
-        assert_eq!(value, Ok(142));
+        assert_eq!(value, 142);
     }
 
     #[test]
@@ -60,6 +46,6 @@ mod tests {
 
         let value = get_calibration_value(input);
 
-        assert_eq!(value, Ok(54450));
+        assert_eq!(value, 54450);
     }
 }
