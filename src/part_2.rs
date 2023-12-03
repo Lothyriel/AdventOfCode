@@ -12,7 +12,7 @@ fn get_calibration_line(input: &str) -> usize {
         Token::Character(_) => None,
     });
 
-    let first = numbers.next().expect("Expected at least a number");
+    let first = numbers.next().expect("Expected at least one number");
 
     let last = numbers.next_back().unwrap_or(first);
 
