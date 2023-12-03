@@ -58,20 +58,18 @@ fn parse(bytes: &mut Bytes<'_>) -> Option<Token> {
     }
 }
 
-fn try_parse(expected: &str, bytes: &mut Bytes<'_>) -> Option<Token> {
-    for e in expected.bytes() {
-        // println!(
-        //     "expected: {}, got: {:?}",
-        //     e as char,
-        //     bytes.peek().map(|c| *c as char)
-        // );
-        if e == *bytes.peek()? {
-            bytes.next()?;
-        } else {
+fn try_parse(expected: &str, input: &mut VecDeque<u8>) -> Option<Token> {
+    let mut head = u8::MAX;
+
+    for b in expected.bytes() {
+        head = input.pop_front()?;
+        if b != head {
+            input.push_front(head);
             return None;
         }
     }
 
+    input.push_front(head);
 
     let number = match expected {
         "one" => 1,
