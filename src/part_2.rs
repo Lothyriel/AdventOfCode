@@ -1,11 +1,11 @@
-type Bytes<'a> = core::iter::Peekable<core::str::Bytes<'a>>;
+use std::collections::VecDeque;
 
 pub fn get_calibration_value(input: &str) -> usize {
     input.lines().map(get_calibration_line).sum()
 }
 
 fn get_calibration_line(input: &str) -> usize {
-    let tokens = get_tokens(&mut input.bytes().peekable());
+    let tokens = get_tokens(input.bytes().collect());
 
     let mut numbers = tokens.iter().filter_map(|t| match t {
         Token::Number(n) => Some(n),
@@ -19,11 +19,11 @@ fn get_calibration_line(input: &str) -> usize {
     first * 10 + last
 }
 
-fn get_tokens(bytes: &mut core::iter::Peekable<core::str::Bytes<'_>>) -> Vec<Token> {
+fn get_tokens(mut input: VecDeque<u8>) -> Vec<Token> {
     let mut tokens = Vec::new();
 
-    while bytes.peek().is_some() {
-        if let Some(t) = parse(bytes) {
+    while !input.is_empty() {
+        if let Some(t) = parse(&mut input) {
             tokens.push(t);
         }
     }
