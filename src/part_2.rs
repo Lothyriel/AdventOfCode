@@ -44,6 +44,7 @@ fn parse(input: &mut VecDeque<u8>) -> Option<Token> {
             None
         }
     };
+
     match input.front()? {
         b'0'..=b'9' => Some(Token::Number(input.pop_front()? as usize - 48)),
         b'o' => try_parse("one", input),
@@ -104,6 +105,7 @@ fn backtrace(i: &mut VecDeque<u8>, p: &mut VecDeque<u8>) {
         i.push_front(t);
     }
 }
+
 #[derive(Debug)]
 pub enum Token {
     Number(usize),
@@ -141,8 +143,29 @@ mod tests {
     }
 
     #[test]
+    fn example_backtracing_on_last() {
+        assert_eq!(get_calibration_line("8fourvxkddsrlcvseveneight"), 88);
+    }
+
+    #[test]
     fn example_numbers_sharing_letters() {
         assert_eq!(get_calibration_line("28gtbkszmrtmnineoneightmx"), 28);
+    }
+
+    #[test]
+    fn example_numbers_sharing_letters_2() {
+        assert_eq!(
+            get_calibration_line("stwonefourthree9twonine4six5bvxgkxf"),
+            25
+        );
+    }
+
+    #[test]
+    fn example_backtracing_two() {
+        assert_eq!(
+            get_calibration_line("foneight3fsbhdqzr5twojbsdnntwohd9seven"),
+            17
+        );
     }
 
     #[test]
