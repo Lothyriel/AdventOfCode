@@ -130,6 +130,10 @@ mod tests {
     }
 
     #[test]
+    fn example_numbers_sharing_letters() {
+        assert_eq!(get_calibration_line("28gtbkszmrtmnineoneightmx"), 28);
+    }
+    #[test]
     fn puzzle() {
         let input = include_str!("input");
 
