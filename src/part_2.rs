@@ -69,17 +69,18 @@ fn parse(input: &mut VecDeque<u8>) -> Option<Token> {
 }
 
 fn try_parse(expected: &str, input: &mut VecDeque<u8>) -> Option<Token> {
-    let mut head = u8::MAX;
+    let mut parsed = VecDeque::new();
 
     for b in expected.bytes() {
-        head = input.pop_front()?;
+        let head = input.pop_front()?;
+        parsed.push_back(head);
         if b != head {
-            input.push_front(head);
+            backtrace(input, &mut parsed);
             return None;
         }
     }
 
-    input.push_front(head);
+    input.push_front(parsed.pop_back()?);
 
     let number = match expected {
         "one" => 1,
@@ -97,6 +98,12 @@ fn try_parse(expected: &str, input: &mut VecDeque<u8>) -> Option<Token> {
     Some(Token::Number(number))
 }
 
+fn backtrace(i: &mut VecDeque<u8>, p: &mut VecDeque<u8>) {
+    p.pop_front();
+    while let Some(t) = p.pop_back() {
+        i.push_front(t);
+    }
+}
 #[derive(Debug)]
 pub enum Token {
     Number(usize),
