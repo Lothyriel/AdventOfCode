@@ -37,20 +37,27 @@ fn parse(input: &mut VecDeque<u8>) -> Option<Token> {
         None
     };
 
+    let peek = |i: &mut VecDeque<u8>| match i.get(1) {
+        Some(t) => Some(*t),
+        None => {
+            consume(i);
+            None
+        }
+    };
     match input.front()? {
         b'0'..=b'9' => Some(Token::Number(input.pop_front()? as usize - 48)),
         b'o' => try_parse("one", input),
-        b't' => match input.get(1)? {
+        b't' => match peek(input)? {
             b'w' => try_parse("two", input),
             b'h' => try_parse("three", input),
             _ => consume(input),
         },
-        b'f' => match input.get(1)? {
+        b'f' => match peek(input)? {
             b'o' => try_parse("four", input),
             b'i' => try_parse("five", input),
             _ => consume(input),
         },
-        b's' => match input.get(1)? {
+        b's' => match peek(input)? {
             b'i' => try_parse("six", input),
             b'e' => try_parse("seven", input),
             _ => consume(input),
