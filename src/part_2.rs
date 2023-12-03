@@ -31,30 +31,33 @@ fn get_tokens(mut input: VecDeque<u8>) -> Vec<Token> {
     tokens
 }
 
-fn parse(bytes: &mut Bytes<'_>) -> Option<Token> {
-    let first = bytes.next()?;
+fn parse(input: &mut VecDeque<u8>) -> Option<Token> {
+    let consume = |i: &mut VecDeque<u8>| {
+        i.pop_front()?;
+        None
+    };
 
-    match first {
-        b'0'..=b'9' => Some(Token::Number(first as usize - 48)),
-        b'o' => try_parse("ne", bytes),
-        b't' => match bytes.peek()? {
-            b'w' => try_parse("wo", bytes),
-            b'h' => try_parse("hree", bytes),
-            _ => None,
+    match input.front()? {
+        b'0'..=b'9' => Some(Token::Number(input.pop_front()? as usize - 48)),
+        b'o' => try_parse("one", input),
+        b't' => match input.get(1)? {
+            b'w' => try_parse("two", input),
+            b'h' => try_parse("three", input),
+            _ => consume(input),
         },
-        b'f' => match bytes.peek()? {
-            b'o' => try_parse("our", bytes),
-            b'i' => try_parse("ive", bytes),
-            _ => None,
+        b'f' => match input.get(1)? {
+            b'o' => try_parse("four", input),
+            b'i' => try_parse("five", input),
+            _ => consume(input),
         },
-        b's' => match bytes.peek()? {
-            b'i' => try_parse("ix", bytes),
-            b'e' => try_parse("even", bytes),
-            _ => None,
+        b's' => match input.get(1)? {
+            b'i' => try_parse("six", input),
+            b'e' => try_parse("seven", input),
+            _ => consume(input),
         },
-        b'e' => try_parse("ight", bytes),
-        b'n' => try_parse("ine", bytes),
-        _ => None,
+        b'e' => try_parse("eight", input),
+        b'n' => try_parse("nine", input),
+        _ => consume(input),
     }
 }
 
