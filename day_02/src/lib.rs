@@ -76,7 +76,7 @@ enum Color {
     Blue,
 }
 
-pub type Set = (usize, usize, usize);
+type Set = (usize, usize, usize);
 
 #[cfg(test)]
 mod tests {
