@@ -17,19 +17,19 @@ pub fn get_schematic_value(input: &str) -> usize {
     });
 
     numbers
-        .filter(|n| valid_parts(&symbol_positions, n))
+        .filter(|n| adjacent(&symbol_positions, n))
         .map(|p| p.1.parse::<usize>().expect("Should be a number"))
         .sum()
 }
 
-fn valid_parts(symbols: &[Position], number: &(Position, String)) -> bool {
+fn adjacent(symbols: &[Position], number: &(Position, String)) -> bool {
     symbols
         .iter()
-        .flat_map(|s| (0..number.1.len()).map(|n| valid(number.0, n, s)))
+        .flat_map(|s| (0..number.1.len()).map(|n| adjacent_offset(number.0, n, s)))
         .any(|x| x)
 }
 
-fn valid(position: Position, n: usize, symbol: &(usize, usize)) -> bool {
+fn adjacent_offset(position: Position, n: usize, symbol: &(usize, usize)) -> bool {
     let (line, col) = position;
 
     BORDER_OFFSETS
