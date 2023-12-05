@@ -63,6 +63,18 @@ fn parse_number(input: &mut VecDeque<(usize, u8)>) -> (usize, Token) {
     (column, Token::Number(n))
 }
 
+const BORDER_OFFSETS: [(i32, i32); 9] = [
+    (-1, -1),
+    (-1, 0),
+    (-1, 1),
+    (0, -1),
+    (0, 0),
+    (0, 1),
+    (1, -1),
+    (1, 0),
+    (1, 1),
+];
+
 type Position = (usize, usize);
 
 #[derive(PartialEq, Debug)]

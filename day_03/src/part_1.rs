@@ -1,4 +1,4 @@
-use crate::{get_tokens, Position, Token};
+use crate::{get_tokens, Position, Token, BORDER_OFFSETS};
 
 pub fn get_schematic_value(input: &str) -> usize {
     let tokens = get_tokens(input);
@@ -37,18 +37,6 @@ fn adjacent_offset(position: Position, n: usize, symbol: &(usize, usize)) -> boo
         .map(|r| (line as i32 + r.0, r.1 + col as i32 + n as i32))
         .any(|b| (b.0, b.1) == (symbol.0 as i32, symbol.1 as i32))
 }
-
-const BORDER_OFFSETS: [(i32, i32); 9] = [
-    (-1, -1),
-    (-1, 0),
-    (-1, 1),
-    (0, -1),
-    (0, 0),
-    (0, 1),
-    (1, -1),
-    (1, 0),
-    (1, 1),
-];
 
 #[cfg(test)]
 mod tests {
