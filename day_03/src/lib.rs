@@ -63,14 +63,12 @@ fn parse_number(input: &mut VecDeque<(usize, u8)>) -> (usize, Token) {
     (column, Token::Number(n))
 }
 
-fn adjacent<'a>(
-    symbols: &'a [Position],
-    number: &'a (Position, String),
-) -> impl Iterator<Item = (i32, i32)> + 'a {
+fn adjacent(symbols: &[Position], number: &(Position, String)) -> Option<(i32, i32)> {
     symbols
         .iter()
         .flat_map(|s| (0..number.1.len()).map(|n| adjacent_offset(number.0, n, s)))
         .flatten()
+        .find(|_| true)
 }
 
 fn adjacent_offset(position: Position, n: usize, symbol: &(usize, usize)) -> Option<(i32, i32)> {
