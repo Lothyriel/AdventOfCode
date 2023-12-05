@@ -17,7 +17,7 @@ pub fn get_schematic_value(input: &str) -> usize {
     });
 
     numbers
-        .filter(|n| adjacent(&symbol_positions, n).any(|_| true))
+        .filter(|n| adjacent(&symbol_positions, n).is_some())
         .map(|p| p.1.parse::<usize>().expect("Should be a number"))
         .sum()
 }
