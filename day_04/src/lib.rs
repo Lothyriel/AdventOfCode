@@ -1,20 +1,8 @@
 pub mod part_1;
+pub mod part_2;
 
 fn get_cards(input: &str) -> impl Iterator<Item = Card> + '_ {
     input.lines().map(parse_card)
-}
-
-fn get_card_points(c: Card) -> usize {
-    let hits = c
-        .numbers
-        .iter()
-        .filter(|n| c.winning_numbers.contains(n))
-        .count();
-
-    match hits {
-        0 => 0,
-        _ => 1 << (hits as u32 - 1),
-    }
 }
 
 fn parse_card(input: &str) -> Card {
@@ -64,22 +52,17 @@ struct Card {
     winning_numbers: Vec<usize>,
 }
 
+impl Card {
+    fn get_hit_numbers(&self) -> impl Iterator<Item = &usize> + '_ {
+        self.numbers
+            .iter()
+            .filter(|n| self.winning_numbers.contains(n))
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn get_points_line_1() {
-        let input = Card {
-            id: 1,
-            numbers: vec![83, 86, 6, 31, 17, 9, 48, 53],
-            winning_numbers: vec![41, 48, 83, 86, 17],
-        };
-
-        let result = get_card_points(input);
-
-        assert_eq!(result, 8);
-    }
 
     #[test]
     fn parse_line_1() {

@@ -1,12 +1,34 @@
-use crate::{get_card_points, get_cards};
+use crate::{get_cards, Card};
 
 pub fn get_points(input: &str) -> usize {
-    get_cards(input).map(get_card_points).sum()
+    get_cards(input).map(|c| get_card_points(&c)).sum()
+}
+
+fn get_card_points(c: &Card) -> usize {
+    let hits = c.get_hit_numbers().count();
+
+    match hits {
+        0 => 0,
+        _ => 1 << (hits as u32 - 1),
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn get_points_line_1() {
+        let input = Card {
+            id: 1,
+            numbers: vec![83, 86, 6, 31, 17, 9, 48, 53],
+            winning_numbers: vec![41, 48, 83, 86, 17],
+        };
+
+        let result = get_card_points(&input);
+
+        assert_eq!(result, 8);
+    }
 
     #[test]
     fn example() {
