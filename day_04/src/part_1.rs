@@ -5,7 +5,7 @@ pub fn get_points(input: &str) -> usize {
 }
 
 fn get_card_points(c: &Card) -> usize {
-    let hits = c.get_hit_numbers().count();
+    let hits = c.get_matching().count();
 
     match hits {
         0 => 0,

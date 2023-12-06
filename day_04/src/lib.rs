@@ -53,7 +53,7 @@ struct Card {
 }
 
 impl Card {
-    fn get_hit_numbers(&self) -> impl Iterator<Item = &usize> + '_ {
+    fn get_matching(&self) -> impl Iterator<Item = &usize> + '_ {
         self.numbers
             .iter()
             .filter(|n| self.winning_numbers.contains(n))
