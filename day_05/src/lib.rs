@@ -1,13 +1,17 @@
 pub mod part_1;
+pub mod part_2;
+
+pub static mut COMPARISONS: usize = 0;
+pub static mut CALCULATIONS: usize = 0;
 
 #[derive(Debug, PartialEq)]
-struct FarmerAlmanac {
+pub struct FarmerAlmanac {
     mappers: Vec<Mapper>,
-    seeds: Vec<usize>,
+    pub seeds: Vec<usize>,
 }
 
 impl FarmerAlmanac {
-    fn get_lowest_location(&self) -> usize {
+    pub fn get_lowest_location(&self) -> usize {
         self.seeds
             .iter()
             .map(|s| self.map_seed(*s))
@@ -65,7 +69,13 @@ impl Range {
     }
 
     fn convert(&self, input: usize) -> Option<usize> {
+        unsafe {
+            COMPARISONS += 1;
+        }
         if input >= self.source && input < self.source + self.length {
+            unsafe {
+                CALCULATIONS += 1;
+            }
             Some(input - self.source + self.dest)
         } else {
             None
