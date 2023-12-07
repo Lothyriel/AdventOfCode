@@ -1,7 +1,7 @@
 pub mod part_1;
 pub mod part_2;
 
-fn get_cards(input: &str) -> impl Iterator<Item = Card> + '_ {
+fn parse_cards(input: &str) -> impl Iterator<Item = Card> + '_ {
     input.lines().map(parse_card)
 }
 

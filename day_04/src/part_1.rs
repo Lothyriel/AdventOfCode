@@ -1,7 +1,7 @@
-use crate::{get_cards, Card};
+use crate::{parse_cards, Card};
 
 pub fn get_points(input: &str) -> usize {
-    get_cards(input).map(|c| get_card_points(&c)).sum()
+    parse_cards(input).map(|c| get_card_points(&c)).sum()
 }
 
 fn get_card_points(c: &Card) -> usize {
