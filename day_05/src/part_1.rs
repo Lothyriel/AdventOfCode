@@ -1,11 +1,11 @@
 use crate::{FarmerAlmanac, Mapper};
 
 pub fn get_lowest_location(input: &str) -> usize {
-    FarmerAlmanac::parse_1(input).get_lowest_location()
+    FarmerAlmanac::parse(input).get_lowest_location()
 }
 
 impl FarmerAlmanac {
-    pub fn parse_1(input: &str) -> Self {
+    pub fn parse(input: &str) -> Self {
         let mut parts = input.split(':');
 
         let seeds = parts
@@ -171,6 +171,6 @@ mod tests {
             seeds: vec![79, 14, 55, 13],
         };
 
-        assert_eq!(FarmerAlmanac::parse_1(include_str!("example")), expected);
+        assert_eq!(FarmerAlmanac::parse(include_str!("example")), expected);
     }
 }
