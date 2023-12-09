@@ -11,7 +11,7 @@ pub fn get_total_winnings(input: &str) -> usize {
         .for_each(|(c, g)| change_jester(g, c));
 
     games.sort_by(|g1, g2| {
-        let ord = g1.hand.value().cmp(&g2.hand.value());
+        let ord = g1.hand.cmp(&g2.hand);
 
         match ord {
             Ordering::Equal => g1.break_tie_jester(g2),
@@ -28,12 +28,12 @@ fn change_jester(game: &mut crate::Game, count: usize) {
     }
 
     game.hand = match game.hand {
-        Hand::High(c) => Hand::One(c),
-        Hand::One(c) => Hand::Two(c, *game.cards.first().expect("Should have card")),
-        Hand::Two(c1, c2) => Hand::Full(c1, c2),
-        Hand::Three(c) => Hand::Four(c),
-        Hand::Full(c, _) => Hand::Four(c),
-        Hand::Four(c) | Hand::Five(c) => Hand::Five(c),
+        Hand::High => Hand::One,
+        Hand::One => Hand::Two,
+        Hand::Two => Hand::Full,
+        Hand::Three => Hand::Four,
+        Hand::Full => Hand::Four,
+        Hand::Four | Hand::Five => Hand::Five,
     };
 
     change_jester(game, count - 1)
@@ -52,12 +52,15 @@ mod tests {
             game.hand
         };
 
-        assert_eq!(
-            test("J8787 166"),
-            Hand::Full(Card::Number(8), Card::Number(7))
-        );
+        assert_eq!(test("J8787 166"), Hand::Full);
+        assert_eq!(test("2J957 35"), Hand::One);
+    }
 
-        assert_eq!(test("2J957 35"), Hand::One(Card::Number(9)));
+    #[test]
+    fn reddit_example() {
+        let result = get_total_winnings(include_str!("reddit_input"));
+
+        assert_eq!(result, 6839);
     }
 
     #[test]
