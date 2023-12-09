@@ -2,13 +2,18 @@ use std::cmp::Ordering;
 
 use crate::{Card, Hand};
 
-pub fn get_total_winnings(input: &str) -> usize {
-    let mut games: Vec<_> = crate::parse_games(input).collect();
+fn parse_game_jester(input: &str) -> crate::Game {
+    let mut game = crate::Game::parse(input);
 
-    games
-        .iter_mut()
-        .map(|g| (g.cards.iter().filter(|c| matches!(c, Card::J)).count(), g))
-        .for_each(|(c, g)| change_jester(g, c));
+    let jesters = game.cards.iter().filter(|c| matches!(c, Card::J)).count();
+
+    change_jester(&mut game, jesters);
+
+    game
+}
+
+pub fn get_total_winnings(input: &str) -> usize {
+    let mut games: Vec<_> = input.lines().map(parse_game_jester).collect();
 
     games.sort_by(|g1, g2| {
         let ord = g1.hand.cmp(&g2.hand);
@@ -55,12 +60,7 @@ mod tests {
 
     #[test]
     fn jester() {
-        let test = |input: &str| {
-            let mut game = crate::Game::parse(input);
-            let jester_count = game.cards.iter().filter(|c| matches!(c, Card::J)).count();
-            change_jester(&mut game, jester_count);
-            game.hand
-        };
+        let test = |input: &str| parse_game_jester(input).hand;
 
         assert_eq!(test("J8787 166"), Hand::Full);
         assert_eq!(test("2J957 35"), Hand::One);
