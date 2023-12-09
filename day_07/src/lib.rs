@@ -103,14 +103,14 @@ impl Hand {
 impl Hand {
     fn parse<'a>(cards: impl Iterator<Item = &'a Card>) -> Hand {
         let cards = cards.fold(HashMap::new(), |mut acc, c| {
-            let entry = acc.entry(c).or_insert(0usize);
+            let entry = acc.entry(*c).or_insert(0usize);
 
             *entry += 1;
 
             acc
         });
 
-        let (&&card, max) = cards
+        let (&card, max) = cards
             .iter()
             .max_by(|(_, a1), (_, a2)| a1.cmp(a2))
             .expect("Should have a max number");
@@ -122,21 +122,21 @@ impl Hand {
                 let second = cards.iter().find(|(_, &count)| count == 2);
 
                 match second {
-                    Some((&&second, _)) => Hand::Full(card, second),
+                    Some((&second, _)) => Hand::Full(card, second),
                     None => Hand::Three(card),
                 }
             }
             2 => {
                 let mut pairs = cards.iter().filter(|(_, &count)| count == 2);
 
-                let (&&first, _) = pairs.next().expect("Expected a pair");
+                let (&first, _) = pairs.next().expect("Expected a pair");
 
                 match pairs.next() {
-                    Some((&&second, _)) => Hand::Two(first.max(second), first.min(second)),
+                    Some((&second, _)) => Hand::Two(first.max(second), first.min(second)),
                     None => Hand::One(first),
                 }
             }
-            1 => Hand::High(**cards.keys().max().expect("Should have max")),
+            1 => Hand::High(*cards.keys().max().expect("Should have max")),
             _ => unreachable!("Can't have 6 cards"),
         }
     }
