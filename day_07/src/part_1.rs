@@ -4,7 +4,7 @@ pub fn get_total_winnings(input: &str) -> usize {
     let mut games: Vec<_> = crate::parse_games(input).collect();
 
     games.sort_by(|g1, g2| {
-        let ord = g1.hand.value().cmp(&g2.hand.value());
+        let ord = g1.hand.cmp(&g2.hand);
 
         match ord {
             Ordering::Equal => g1.break_tie(g2),

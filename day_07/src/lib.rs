@@ -106,29 +106,15 @@ impl Card {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 enum Hand {
-    High(Card),
-    One(Card),
-    Two(Card, Card),
-    Three(Card),
-    Full(Card, Card),
-    Four(Card),
-    Five(Card),
-}
-
-impl Hand {
-    fn value(&self) -> usize {
-        match self {
-            Hand::High(_) => 1,
-            Hand::One(_) => 2,
-            Hand::Two(_, _) => 3,
-            Hand::Three(_) => 4,
-            Hand::Full(_, _) => 5,
-            Hand::Four(_) => 6,
-            Hand::Five(_) => 7,
-        }
-    }
+    High,
+    One,
+    Two,
+    Three,
+    Full,
+    Four,
+    Five,
 }
 
 impl Hand {
@@ -141,33 +127,33 @@ impl Hand {
             acc
         });
 
-        let (&card, max) = cards
+        let (_, max) = cards
             .iter()
             .max_by(|(_, a1), (_, a2)| a1.cmp(a2))
             .expect("Should have a max number");
 
         match max {
-            5 => Hand::Five(card),
-            4 => Hand::Four(card),
+            5 => Hand::Five,
+            4 => Hand::Four,
             3 => {
                 let second = cards.iter().find(|(_, &count)| count == 2);
 
                 match second {
-                    Some((&second, _)) => Hand::Full(card, second),
-                    None => Hand::Three(card),
+                    Some(_) => Hand::Full,
+                    None => Hand::Three,
                 }
             }
             2 => {
                 let mut pairs = cards.iter().filter(|(_, &count)| count == 2);
 
-                let (&first, _) = pairs.next().expect("Expected a pair");
+                let _ = pairs.next().expect("Expected a pair");
 
                 match pairs.next() {
-                    Some((&second, _)) => Hand::Two(first.max(second), first.min(second)),
-                    None => Hand::One(first),
+                    Some(_) => Hand::Two,
+                    None => Hand::One,
                 }
             }
-            1 => Hand::High(*cards.keys().max().expect("Should have max")),
+            1 => Hand::High,
             _ => unreachable!("Can't have 6 cards"),
         }
     }
