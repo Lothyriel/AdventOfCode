@@ -30,6 +30,6 @@ mod tests {
     fn puzzle() {
         let result = get_total_winnings(include_str!("input"));
 
-        assert_eq!(result, 0);
+        assert_eq!(result, 250370104);
     }
 }
