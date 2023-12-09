@@ -1,9 +1,29 @@
 use std::{cmp::Ordering, collections::HashMap};
 
 pub mod part_1;
+pub mod part_2;
 
 fn parse_games(input: &str) -> impl Iterator<Item = Game> + '_ {
     input.lines().map(Game::parse)
+}
+
+fn parse_game(input: &str) -> (Vec<Card>, usize) {
+    let mut parts = input.split_whitespace();
+
+    let cards: Vec<_> = parts
+        .next()
+        .expect("Expected hands part")
+        .bytes()
+        .flat_map(Card::try_parse)
+        .collect();
+
+    let bid = parts
+        .next()
+        .expect("Expected bid part")
+        .parse()
+        .expect("Expected a number");
+
+    (cards, bid)
 }
 
 #[derive(Debug)]
@@ -15,20 +35,7 @@ struct Game {
 
 impl Game {
     fn parse(input: &str) -> Self {
-        let mut parts = input.split_whitespace();
-
-        let cards: Vec<_> = parts
-            .next()
-            .expect("Expected hands part")
-            .bytes()
-            .flat_map(Card::try_parse)
-            .collect();
-
-        let bid = parts
-            .next()
-            .expect("Expected bid part")
-            .parse()
-            .expect("Expected a number");
+        let (cards, bid) = parse_game(input);
 
         Self {
             bid,
@@ -43,6 +50,19 @@ impl Game {
             .iter()
             .zip(other.cards.iter())
             .find_map(|(c1, c2)| match c1.cmp(c2) {
+                Ordering::Equal => None,
+                c => Some(c),
+            });
+
+        diff.unwrap_or(Ordering::Equal)
+    }
+
+    fn break_tie_jester(&self, other: &Self) -> Ordering {
+        let diff = self
+            .cards
+            .iter()
+            .zip(other.cards.iter())
+            .find_map(|(c1, c2)| match c1.value_jester().cmp(&c2.value_jester()) {
                 Ordering::Equal => None,
                 c => Some(c),
             });
@@ -71,6 +91,17 @@ impl Card {
             b'T' => Some(Card::T),
             b'2'..=b'9' => Some(Card::Number(card as usize)),
             _ => None,
+        }
+    }
+
+    fn value_jester(&self) -> usize {
+        match self {
+            Card::J => 1,
+            Card::Number(n) => *n,
+            Card::T => 10,
+            Card::Q => 11,
+            Card::K => 12,
+            Card::A => 13,
         }
     }
 }
