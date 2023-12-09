@@ -27,9 +27,19 @@ fn change_jester(game: &mut crate::Game, count: usize) {
         return;
     }
 
+    if game.hand == Hand::One && count == 2 {
+        game.hand = Hand::Three;
+        return;
+    }
+
+    if game.hand == Hand::Three && count == 3 {
+        game.hand = Hand::Four;
+        return;
+    }
+
     game.hand = match game.hand {
         Hand::High => Hand::One,
-        Hand::One => Hand::Two,
+        Hand::One => Hand::Three,
         Hand::Two => Hand::Full,
         Hand::Three => Hand::Four,
         Hand::Full => Hand::Four,
@@ -54,6 +64,20 @@ mod tests {
 
         assert_eq!(test("J8787 166"), Hand::Full);
         assert_eq!(test("2J957 35"), Hand::One);
+
+        assert_eq!(test("Q2KJJ 13"), Hand::Three);
+        assert_eq!(test("T3T3J 17"), Hand::Full);
+        assert_eq!(test("2345J 3"), Hand::One);
+        assert_eq!(test("J345A 2"), Hand::One);
+        assert_eq!(test("T55J5 29"), Hand::Four);
+        assert_eq!(test("KTJJT 34"), Hand::Four);
+        assert_eq!(test("JJJJJ 37"), Hand::Five);
+        assert_eq!(test("AAAAJ 59"), Hand::Five);
+        assert_eq!(test("2JJJJ 53"), Hand::Five);
+        assert_eq!(test("JJJJ2 41"), Hand::Five);
+
+        assert_eq!(test("2233J 1"), Hand::Full);
+        assert_eq!(test("JJJ34 1"), Hand::Four);
     }
 
     #[test]
@@ -70,10 +94,10 @@ mod tests {
         assert_eq!(result, 5905);
     }
 
-    // #[test]
-    // fn puzzle() {
-    //     let result = get_total_winnings(include_str!("input"));
-    //
-    //     assert_eq!(result, 0);
-    // }
+    #[test]
+    fn puzzle() {
+        let result = get_total_winnings(include_str!("input"));
+
+        assert_eq!(result, 251735672);
+    }
 }
