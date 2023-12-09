@@ -44,16 +44,33 @@ mod tests {
     use super::*;
 
     #[test]
+    fn jester() {
+        let test = |input: &str| {
+            let mut game = crate::Game::parse(input);
+            let jester_count = game.cards.iter().filter(|c| matches!(c, Card::J)).count();
+            change_jester(&mut game, jester_count);
+            game.hand
+        };
+
+        assert_eq!(
+            test("J8787 166"),
+            Hand::Full(Card::Number(8), Card::Number(7))
+        );
+
+        assert_eq!(test("2J957 35"), Hand::One(Card::Number(9)));
+    }
+
+    #[test]
     fn example() {
         let result = get_total_winnings(include_str!("example"));
 
         assert_eq!(result, 5905);
     }
 
-    #[test]
-    fn puzzle() {
-        let result = get_total_winnings(include_str!("input"));
-
-        assert_eq!(result, 0);
-    }
+    // #[test]
+    // fn puzzle() {
+    //     let result = get_total_winnings(include_str!("input"));
+    //
+    //     assert_eq!(result, 0);
+    // }
 }

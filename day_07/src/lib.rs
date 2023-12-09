@@ -89,7 +89,7 @@ impl Card {
             b'Q' => Some(Card::Q),
             b'J' => Some(Card::J),
             b'T' => Some(Card::T),
-            b'2'..=b'9' => Some(Card::Number(card as usize)),
+            b'2'..=b'9' => Some(Card::Number(card as usize - 48)),
             _ => None,
         }
     }
@@ -106,7 +106,7 @@ impl Card {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 enum Hand {
     High(Card),
     One(Card),
