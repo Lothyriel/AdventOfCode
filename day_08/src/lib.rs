@@ -3,27 +3,6 @@ use std::collections::HashMap;
 pub mod part_1;
 pub mod part_2;
 
-fn get_steps<'a>(
-    directions: &[Direction],
-    mut current: &'a str,
-    nodes: &'a HashMap<&str, (&str, &str)>,
-) -> usize {
-    for (steps, direction) in directions.iter().cycle().enumerate() {
-        if current == "ZZZ" {
-            return steps;
-        }
-
-        let next = nodes.get(current).expect("Should have this node");
-
-        current = match direction {
-            Direction::Left => next.0,
-            Direction::Right => next.1,
-        };
-    }
-
-    unreachable!("Cycled iteration shouldn't finish")
-}
-
 fn parse(input: &str) -> (Vec<Direction>, HashMap<&str, (&str, &str)>) {
     let mut lines = input.lines();
 

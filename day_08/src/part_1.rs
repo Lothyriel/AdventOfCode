@@ -1,9 +1,24 @@
-use crate::{get_steps, parse};
+use crate::Direction;
 
 pub fn get_steps_count(input: &str) -> usize {
-    let (directions, nodes) = parse(input);
+    let (directions, nodes) = crate::parse(input);
 
-    get_steps(&directions, "AAA", &nodes)
+    let mut current = "AAA";
+
+    for (steps, direction) in directions.iter().cycle().enumerate() {
+        if current == "ZZZ" {
+            return steps;
+        }
+
+        let next = nodes.get(current).expect("Should have this node");
+
+        current = match direction {
+            Direction::Left => next.0,
+            Direction::Right => next.1,
+        };
+    }
+
+    unreachable!("Cycled iteration shouldn't finish")
 }
 
 #[cfg(test)]
