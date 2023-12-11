@@ -23,7 +23,7 @@ pub fn get_gears_value(input: &str) -> usize {
         .fold(HashMap::new(), |mut acc, ((_, n), s)| {
             let entry = acc.entry(s).or_insert(Vec::new());
 
-            entry.push(n.parse::<usize>().expect("Should be a number"));
+            entry.push(n.parse().expect("Should be a number"));
 
             acc
         });
