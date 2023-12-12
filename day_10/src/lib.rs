@@ -59,12 +59,12 @@ impl PipeMaze {
 
     fn explore<'a>(
         &'a self,
-        c: TilePos,
-        v: &'a HashSet<(usize, usize)>,
+        current: TilePos,
+        visited: &'a HashSet<(usize, usize)>,
     ) -> impl Iterator<Item = TilePos> + '_ {
-        self.neighbor_pipes(c.1, c.2)
-            .filter(|n| !v.contains(&(n.1, n.2)))
-            .filter(move |&n| fits(c, n))
+        self.neighbor_pipes(current.1, current.2)
+            .filter(|n| !visited.contains(&(n.1, n.2)))
+            .filter(move |&n| fits(current, n))
     }
 
     fn neighbor_pipes(&self, x: usize, y: usize) -> impl Iterator<Item = TilePos> + '_ {
@@ -72,7 +72,7 @@ impl PipeMaze {
             .filter(|t| !matches!(t.0, Tile::Ground))
     }
 
-    fn neighbors(&self, x: usize, y: usize) -> impl Iterator<Item = (Tile, usize, usize)> + '_ {
+    fn neighbors(&self, x: usize, y: usize) -> impl Iterator<Item = TilePos> + '_ {
         OFFSETS.iter().filter_map(move |(x1, y1)| {
             let x = x.checked_add_signed(*x1)?;
             let y = y.checked_add_signed(*y1)?;
