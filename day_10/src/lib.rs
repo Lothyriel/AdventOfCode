@@ -1,4 +1,4 @@
-use std::{collections::HashSet, time::Duration};
+use std::collections::HashSet;
 
 pub mod part_1;
 
@@ -43,8 +43,6 @@ impl PipeMaze {
 
         let mut visited = HashSet::new();
 
-        let mut count = 0;
-
         loop {
             let mut new = Vec::new();
 
@@ -59,10 +57,9 @@ impl PipeMaze {
             }
 
             if new.is_empty() {
-                break count;
+                return visited.len() / 2;
             }
 
-            count += 1;
             nodes = new;
         }
     }
