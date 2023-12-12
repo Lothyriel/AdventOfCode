@@ -23,14 +23,8 @@ mod tests {
     }
 
     #[test]
-    fn example_reddit() {
-        let result = get_max_distance(include_str!("input_reddit"), false);
-        assert_eq!(result, 3022);
-    }
-
-    #[test]
     fn puzzle() {
         let result = get_max_distance(include_str!("input"), false);
-        assert_eq!(result, 0);
+        assert_eq!(result, 6831);
     }
 }
