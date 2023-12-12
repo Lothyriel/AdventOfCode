@@ -30,7 +30,7 @@ const OFFSETS: [Offset; 4] = [UP, LEFT, RIGHT, DOWN];
 type TilePos = (Tile, usize, usize);
 
 impl PipeMaze {
-    fn farthest(&self, debug: bool) -> usize {
+    fn farthest(&self) -> usize {
         let (x, y) = self
             .tiles
             .iter()
@@ -52,11 +52,8 @@ impl PipeMaze {
                 }
             }
 
-            if debug {
-                self.debug(&visited);
-            }
-
             if new.is_empty() {
+                self.debug(&visited);
                 return visited.len() / 2;
             }
 
@@ -113,8 +110,6 @@ impl PipeMaze {
     }
 
     fn debug(&self, visited: &HashSet<(usize, usize)>) {
-        print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
-
         for (x, l) in self.tiles.chunks_exact(self.size).enumerate() {
             let line: String = l
                 .iter()
@@ -123,11 +118,11 @@ impl PipeMaze {
                     false => ' ',
                     true => match t {
                         Tile::V => '│',
-                        Tile::H => '━',
+                        Tile::H => '─',
                         Tile::L => '└',
                         Tile::J => '┘',
-                        Tile::F => '┏',
-                        Tile::Seven => '┓',
+                        Tile::F => '┌',
+                        Tile::Seven => '┐',
                         Tile::Start => 'S',
                         Tile::Ground => '.',
                     },
