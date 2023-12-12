@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashSet, VecDeque};
 
 pub mod part_1;
 
@@ -39,37 +39,32 @@ impl PipeMaze {
             .map(|(i, _)| (i / self.size, i % self.size))
             .expect("Should have start tile");
 
-        let mut nodes = vec![(Tile::Start, x, y)];
+        let mut nodes: VecDeque<_> = vec![(Tile::Start, x, y)].into();
 
         let mut visited = HashSet::new();
 
-        loop {
-            let mut new = Vec::new();
-
-            for &n in nodes.iter() {
-                if visited.insert((n.1, n.2)) {
-                    new.append(&mut self.explore(n, &visited));
-                }
+        while let Some(n) = nodes.pop_front() {
+            if visited.insert((n.1, n.2)) {
+                nodes.extend(self.explore(n, &visited));
             }
-
-            if new.is_empty() {
-                self.debug(&visited);
-                return visited.len() / 2;
-            }
-
-            nodes = new;
         }
+
+        self.debug(&visited);
+        visited.len() / 2
     }
 
     fn at(&self, x: usize, y: usize) -> Option<Tile> {
         self.tiles.get((x * self.size) + y).copied()
     }
 
-    fn explore(&self, c: TilePos, v: &HashSet<(usize, usize)>) -> Vec<(Tile, usize, usize)> {
+    fn explore<'a>(
+        &'a self,
+        c: TilePos,
+        v: &'a HashSet<(usize, usize)>,
+    ) -> impl Iterator<Item = TilePos> + '_ {
         self.neighbor_pipes(c.1, c.2)
             .filter(|n| !v.contains(&(n.1, n.2)))
-            .filter(|&n| fits(c, n))
-            .collect()
+            .filter(move |&n| fits(c, n))
     }
 
     fn neighbor_pipes(&self, x: usize, y: usize) -> impl Iterator<Item = TilePos> + '_ {
