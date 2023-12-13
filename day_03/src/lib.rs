@@ -80,12 +80,11 @@ fn adjacent_offset(position: Position, n: usize, symbol: &(usize, usize)) -> Opt
         .find(|b| (b.0, b.1) == (symbol.0 as i32, symbol.1 as i32))
 }
 
-const BORDER_OFFSETS: [(i32, i32); 9] = [
+const BORDER_OFFSETS: [(i32, i32); 8] = [
     (-1, -1),
     (-1, 0),
     (-1, 1),
     (0, -1),
-    (0, 0),
     (0, 1),
     (1, -1),
     (1, 0),
