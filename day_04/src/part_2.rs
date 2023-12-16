@@ -1,14 +1,11 @@
-use crate::parse_cards;
-
 pub fn get_total_cards(input: &str) -> usize {
-    let card_points: Vec<_> = parse_cards(input)
+    let card_points: Vec<_> = crate::parse_cards(input)
         .map(|c| (c.id, c.get_matching().count()))
         .collect();
 
     card_points
         .iter()
         .map(|c| get_cards_count(&card_points, c))
-        .inspect(|x| println!("{x}"))
         .sum()
 }
 
@@ -49,6 +46,6 @@ Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11"#;
 
         let result = get_total_cards(input);
 
-        assert_eq!(result, 0);
+        assert_eq!(result, 5833065);
     }
 }
