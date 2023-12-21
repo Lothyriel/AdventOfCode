@@ -1,23 +1,10 @@
 pub fn get_hash_sum(input: &str) -> usize {
-    input.trim().split(',').map(hash).sum()
-}
-
-fn hash(input: &str) -> usize {
-    input
-        .bytes()
-        .fold(0, |acc, b| ((acc + b as usize) * 17) % 256)
+    input.trim().split(',').map(crate::hash).sum()
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn test_hash() {
-        let result = hash("HASH");
-
-        assert_eq!(result, 52);
-    }
 
     #[test]
     fn example() {
