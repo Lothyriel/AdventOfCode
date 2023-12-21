@@ -1,7 +1,7 @@
 pub fn get_focusing_power(input: &str) -> usize {
     let steps = input.trim().split(',').map(Step::parse);
 
-    get_boxes(steps).iter().map(|l| l.focal_power()).sum()
+    get_boxes(steps).iter().map(Box::focal_power).sum()
 }
 
 fn get_boxes(steps: impl Iterator<Item = Step>) -> Vec<Box> {
