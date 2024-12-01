@@ -6,7 +6,7 @@ pub fn historian_hysteria(input: &str) -> u64 {
     let (left, right) = parse(input);
 
     let occurrences = right.iter().fold(HashMap::new(), |mut acc, x| {
-        let occurrences = acc.entry(*x).or_insert(0u64);
+        let occurrences = acc.entry(x).or_insert(0);
 
         *occurrences += 1;
 
@@ -14,7 +14,7 @@ pub fn historian_hysteria(input: &str) -> u64 {
     });
 
     left.iter()
-        .map(|x| x * occurrences.get(x).unwrap_or(&0u64))
+        .map(|x| x * occurrences.get(x).copied().unwrap_or_default())
         .sum()
 }
 
