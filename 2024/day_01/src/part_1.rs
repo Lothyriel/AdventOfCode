@@ -1,3 +1,5 @@
+use crate::parse;
+
 pub fn historian_hysteria(input: &str) -> u64 {
     let (mut left, mut right) = parse(input);
 
@@ -5,25 +7,6 @@ pub fn historian_hysteria(input: &str) -> u64 {
     right.sort();
 
     left.iter().zip(right).map(|x| x.0.abs_diff(x.1)).sum()
-}
-
-pub fn parse(input: &str) -> (Vec<u64>, Vec<u64>) {
-    input
-        .lines()
-        .map(|l| l.split_whitespace())
-        .map(|mut s| (s.next().expect("First"), s.next().expect("Second")))
-        .map(|(first, second)| {
-            (
-                first.parse().expect("Number"),
-                second.parse().expect("Number"),
-            )
-        })
-        .fold((Vec::new(), Vec::new()), |mut acc, x| {
-            acc.0.push(x.0);
-            acc.1.push(x.1);
-
-            acc
-        })
 }
 
 #[cfg(test)]
