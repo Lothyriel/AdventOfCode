@@ -1,7 +1,7 @@
-use std::cmp::Ordering;
+pub mod part_02;
+pub mod part_1;
 
-pub mod day_01;
-pub mod day_02;
+use std::cmp::Ordering;
 
 pub fn parse(input: &str) -> Vec<Vec<u8>> {
     input
