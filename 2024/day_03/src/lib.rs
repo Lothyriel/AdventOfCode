@@ -5,8 +5,16 @@ pub mod part_2;
 
 type Queue<'a> = Peekable<Bytes<'a>>;
 
+enum Token {
+    Do,
+    Dont,
+    Mul(Multiplication),
+}
+
+struct Multiplication(u32, u32);
+
 fn parse(input: &str) -> Vec<Token> {
-    let mut multiplications = Vec::new();
+    let mut parsed = Vec::new();
 
     let mut tokens = input.bytes().peekable();
 
@@ -21,11 +29,11 @@ fn parse(input: &str) -> Vec<Token> {
         };
 
         if let Some(o) = o {
-            multiplications.push(o);
+            parsed.push(o);
         }
     }
 
-    multiplications
+    parsed
 }
 
 fn try_parse_modifier(tokens: &mut Queue) -> Option<Token> {
@@ -104,11 +112,3 @@ fn parse_number(tokens: &mut Queue) -> u32 {
 
     number.parse().expect("Number")
 }
-
-enum Token {
-    Do,
-    Dont,
-    Mul(Multiplication),
-}
-
-struct Multiplication(u32, u32);
