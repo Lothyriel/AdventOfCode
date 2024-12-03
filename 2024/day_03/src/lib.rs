@@ -1,17 +1,19 @@
 use std::{iter::Peekable, str::Bytes};
 
 pub mod part_1;
+pub mod part_2;
 
 type Queue<'a> = Peekable<Bytes<'a>>;
 
-fn parse(input: &str) -> Vec<Multiplication> {
+fn parse(input: &str) -> Vec<Token> {
     let mut multiplications = Vec::new();
 
     let mut tokens = input.bytes().peekable();
 
     while let Some(t) = tokens.peek() {
         let o = match t {
-            b'm' => try_parse_multiplication(&mut tokens),
+            b'm' => try_parse_multiplication(&mut tokens).map(Token::Mul),
+            b'd' => try_parse_modifier(&mut tokens),
             _ => {
                 tokens.next();
                 None
@@ -24,6 +26,34 @@ fn parse(input: &str) -> Vec<Multiplication> {
     }
 
     multiplications
+}
+
+fn try_parse_modifier(tokens: &mut Queue) -> Option<Token> {
+    consume(tokens, |t| t == b'd')?;
+    consume(tokens, |t| t == b'o')?;
+
+    let next = tokens.peek()?;
+
+    match next {
+        b'(' => try_parse_do(tokens),
+        b'n' => try_parse_dont(tokens),
+        _ => None,
+    }
+}
+
+fn try_parse_dont(tokens: &mut Queue) -> Option<Token> {
+    consume(tokens, |t| t == b'n')?;
+    consume(tokens, |t| t == b'\'')?;
+    consume(tokens, |t| t == b't')?;
+
+    Some(Token::Dont)
+}
+
+fn try_parse_do(tokens: &mut Queue) -> Option<Token> {
+    consume(tokens, |t| t == b'(')?;
+    consume(tokens, |t| t == b')')?;
+
+    Some(Token::Do)
 }
 
 fn try_parse_multiplication(tokens: &mut Queue) -> Option<Multiplication> {
@@ -56,10 +86,7 @@ fn consume(tokens: &mut Queue, predicate: impl Fn(u8) -> bool) -> Option<u32> {
 
             Some(number)
         }
-        false => {
-            tokens.next();
-            None
-        }
+        false => None,
     }
 }
 
@@ -76,6 +103,12 @@ fn parse_number(tokens: &mut Queue) -> u32 {
     }
 
     number.parse().expect("Number")
+}
+
+enum Token {
+    Do,
+    Dont,
+    Mul(Multiplication),
 }
 
 struct Multiplication(u32, u32);

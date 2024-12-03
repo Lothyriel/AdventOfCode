@@ -1,7 +1,16 @@
-pub fn mull_it_over(input: &str) -> u32 {
-    let operations = crate::parse(input);
+use crate::Token;
 
-    operations.iter().map(|o| o.0 * o.1).sum()
+pub fn mull_it_over(input: &str) -> u32 {
+    let tokens = crate::parse(input);
+
+    tokens
+        .iter()
+        .filter_map(|t| match t {
+            Token::Mul(m) => Some(m),
+            _ => None,
+        })
+        .map(|m| m.0 * m.1)
+        .sum()
 }
 
 #[cfg(test)]
