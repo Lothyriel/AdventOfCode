@@ -23,6 +23,7 @@ Program: 0,1,5,4,3,0"#;
 
     #[test]
     fn input() {
-        assert_eq!("", chronospatial_computer(include_str!("input")));
+        let expected = "6,0,6,3,0,2,3,1,6";
+        assert_eq!(expected, chronospatial_computer(include_str!("input")));
     }
 }
