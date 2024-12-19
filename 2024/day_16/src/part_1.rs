@@ -1,6 +1,6 @@
 use std::collections::{BinaryHeap, HashSet};
 
-use crate::{parse, MazeRunner, State, Tile};
+use crate::{parse, MazeRunner, Point, State, Tile};
 
 pub fn reindeer_maze(input: &str) -> usize {
     let runner = parse(input);
@@ -20,19 +20,21 @@ impl MazeRunner {
         let mut visited = HashSet::new();
 
         to_visit.push(State {
-            coordinates: self.position,
-            direction: self.direction,
+            point: Point {
+                coordinates: self.position,
+                direction: self.direction,
+            },
             cost: 0,
         });
 
         while let Some(state) = to_visit.pop() {
-            let (x, y) = state.coordinates;
+            let (x, y) = state.point.coordinates;
 
-            if state.coordinates == finish {
+            if state.point.coordinates == finish {
                 return Some(state.cost);
             }
 
-            let visited_state = (x, y, state.direction as u8);
+            let visited_state = (x, y, state.point.direction as u8);
 
             if visited.contains(&visited_state) {
                 continue;
@@ -42,23 +44,22 @@ impl MazeRunner {
 
             if let Some(new_coordinates) = self.get_forward_coordinates(&state) {
                 to_visit.push(State {
-                    coordinates: new_coordinates,
-                    direction: state.direction,
+                    point: state.point.new_coordinates(new_coordinates),
                     cost: state.cost + 1,
                 });
             }
 
-            to_visit.push(State {
-                coordinates: state.coordinates,
-                direction: state.direction.rotate_left(),
-                cost: state.cost + 1000,
-            });
+            let rotations = [
+                state.point.direction.rotate_left(),
+                state.point.direction.rotate_right(),
+            ];
 
-            to_visit.push(State {
-                coordinates: state.coordinates,
-                direction: state.direction.rotate_right(),
-                cost: state.cost + 1000,
-            });
+            for direction in rotations {
+                to_visit.push(State {
+                    point: state.point.new_direction(direction),
+                    cost: state.cost + 1000,
+                });
+            }
         }
 
         None

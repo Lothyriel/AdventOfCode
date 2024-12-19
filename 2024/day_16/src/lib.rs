@@ -1,4 +1,5 @@
 pub mod part_1;
+pub mod part_2;
 
 fn parse(input: &str) -> MazeRunner {
     let size = input.lines().next().expect("First").bytes().len();
@@ -30,11 +31,32 @@ fn parse(input: &str) -> MazeRunner {
     }
 }
 
-#[derive(PartialEq, Eq)]
+#[derive(PartialEq, Eq, Debug)]
 struct State {
+    point: Point,
+    cost: usize,
+}
+
+#[derive(PartialEq, Eq, Debug, Hash, Clone, Copy)]
+struct Point {
     coordinates: (usize, usize),
     direction: Direction,
-    cost: usize,
+}
+
+impl Point {
+    fn new_coordinates(&self, coordinates: (usize, usize)) -> Point {
+        Point {
+            direction: self.direction,
+            coordinates,
+        }
+    }
+
+    fn new_direction(&self, direction: Direction) -> Point {
+        Point {
+            direction,
+            coordinates: self.coordinates,
+        }
+    }
 }
 
 impl PartialOrd for State {
@@ -49,7 +71,7 @@ impl Ord for State {
     }
 }
 
-#[derive(PartialEq, Eq, Clone, Copy, Debug)]
+#[derive(PartialEq, Eq, Clone, Copy, Debug, Hash)]
 enum Direction {
     North,
     East,
@@ -94,14 +116,14 @@ struct MazeRunner {
 
 impl MazeRunner {
     fn get_forward_coordinates(&self, state: &State) -> Option<(usize, usize)> {
-        let (dx, dy) = match state.direction {
+        let (dx, dy) = match state.point.direction {
             Direction::North => (-1, 0),
             Direction::East => (0, 1),
             Direction::South => (1, 0),
             Direction::West => (0, -1),
         };
 
-        let (x, y) = state.coordinates;
+        let (x, y) = state.point.coordinates;
 
         let new_coordinates = (x.checked_add_signed(dx)?, y.checked_add_signed(dy)?);
 
