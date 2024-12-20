@@ -1,37 +1,10 @@
 use std::collections::VecDeque;
 
 pub mod part_1;
+pub mod part_2;
 
-pub fn parse(input: &str) -> (Warehouse, Vec<Direction>) {
-    let mut parts = input.split("\n\n");
-
-    let size = input.lines().next().expect("First line").bytes().len();
-
-    let inner = parts
-        .next()
-        .expect("Grid")
-        .lines()
-        .flat_map(|l| {
-            l.bytes().map(|b| match b {
-                b'#' => Tile::Wall,
-                b'@' => Tile::Robot,
-                b'.' => Tile::Empty,
-                b'O' => Tile::Box,
-                _ => panic!("Invalid tile"),
-            })
-        })
-        .collect();
-
-    let grid = Matrix { inner, size };
-
-    let robot = grid
-        .get_coordinates(|t| *t == Tile::Robot)
-        .next()
-        .expect("Robot");
-
-    let commands = parts
-        .next()
-        .expect("Commands")
+fn parse_commands(input: &str) -> Vec<Direction> {
+    let commands = input
         .lines()
         .flat_map(|l| {
             l.bytes().map(|b| match b {
@@ -43,103 +16,7 @@ pub fn parse(input: &str) -> (Warehouse, Vec<Direction>) {
             })
         })
         .collect();
-
-    (Warehouse { robot, grid }, commands)
-}
-
-pub struct Warehouse {
-    grid: Matrix<Tile>,
-    robot: Point,
-}
-impl Warehouse {
-    fn process_commands(&mut self, commands: &[Direction]) {
-        for command in commands {
-            self.process_command(command);
-        }
-    }
-
-    pub fn gps_coordinates_count(&self) -> usize {
-        self.grid
-            .get_coordinates(|t| *t == Tile::Box)
-            .map(|(x, y)| x * 100 + y)
-            .sum()
-    }
-
-    pub fn process_command(&mut self, command: &Direction) {
-        match self.valid_movement(self.robot, command) {
-            Some(Movement::Push(pushes)) => {
-                println!("Push {pushes:?}");
-                self.push(pushes, command);
-            }
-            Some(Movement::Normal(c)) => {
-                self.grid.set(self.robot, Tile::Empty);
-                self.grid.set(c, Tile::Robot);
-                self.robot = c;
-            }
-            None => {}
-        }
-    }
-
-    fn push(&mut self, pushes: VecDeque<Point>, direction: &Direction) {
-        for &push in pushes.iter() {
-            self.grid.set(push, Tile::Empty);
-
-            let push = new_pos_unchecked(direction, push).expect("Valid pos");
-
-            self.grid.set(push, Tile::Box);
-        }
-
-        let next = *pushes.iter().last().expect("First push");
-
-        self.grid.set(self.robot, Tile::Empty);
-        self.grid.set(next, Tile::Robot);
-        self.robot = next;
-    }
-
-    fn valid_movement(&self, from: Point, direction: &Direction) -> Option<Movement> {
-        let new = new_pos_unchecked(direction, from)?;
-
-        match self.grid.get(new)? {
-            Tile::Wall => None,
-            Tile::Box => self.valid_push(new, direction).map(Movement::Push),
-            Tile::Empty => Some(Movement::Normal(new)),
-            Tile::Robot => panic!("Shouldn't happen..."),
-        }
-    }
-
-    fn valid_push(&self, from: Point, direction: &Direction) -> Option<VecDeque<(usize, usize)>> {
-        let mut pushes = VecDeque::from([from]);
-
-        match self.valid_movement(from, direction)? {
-            Movement::Push(mut p) => {
-                while let Some(p) = p.pop_back() {
-                    pushes.push_front(p);
-                }
-                Some(pushes)
-            }
-            Movement::Normal(_) => Some(pushes),
-        }
-    }
-
-    pub fn debug_grid(&self) -> String {
-        let mut s = String::new();
-
-        for x in 0..self.grid.size {
-            for y in 0..self.grid.size {
-                let ch = match self.grid.get((x, y)).expect("Valid") {
-                    Tile::Wall => '#',
-                    Tile::Box => 'O',
-                    Tile::Empty => '.',
-                    Tile::Robot => '@',
-                };
-
-                s.push(ch);
-            }
-            s.push('\n');
-        }
-
-        s
-    }
+    commands
 }
 
 fn new_pos_unchecked(direction: &Direction, (x, y): (usize, usize)) -> Option<Point> {
@@ -166,14 +43,6 @@ pub enum Direction {
     Down,
     Left,
     Right,
-}
-
-#[derive(PartialEq, Eq, Clone, Copy)]
-enum Tile {
-    Wall,
-    Box,
-    Empty,
-    Robot,
 }
 
 #[derive(Debug)]
