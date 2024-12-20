@@ -47,7 +47,8 @@ pub enum Direction {
 
 #[derive(Debug)]
 struct Matrix<T> {
-    size: usize,
+    rows: usize,
+    cols: usize,
     inner: Vec<T>,
 }
 
@@ -57,12 +58,12 @@ impl<T: PartialEq + Copy> Matrix<T> {
             .iter()
             .enumerate()
             .filter(move |(_, x)| predicate(x))
-            .map(|(i, _)| (i / self.size, i % self.size))
+            .map(|(i, _)| (i / self.cols, i % self.cols))
     }
 
     fn get(&self, (x, y): (usize, usize)) -> Option<&T> {
-        if x < self.size && y < self.size {
-            self.inner.get(x * self.size + y)
+        if x < self.rows && y < self.cols {
+            self.inner.get(x * self.rows + y)
         } else {
             None
         }
@@ -71,7 +72,7 @@ impl<T: PartialEq + Copy> Matrix<T> {
     fn set(&mut self, (x, y): Point, value: T) -> Option<T> {
         let old = *self.get((x, y))?;
 
-        self.inner[x * self.size + y] = value;
+        self.inner[x * self.rows + y] = value;
 
         Some(old)
     }

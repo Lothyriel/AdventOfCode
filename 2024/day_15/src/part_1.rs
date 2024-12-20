@@ -30,7 +30,11 @@ pub fn parse(input: &str) -> (Warehouse, Vec<Direction>) {
         })
         .collect();
 
-    let grid = Matrix { inner, size };
+    let grid = Matrix {
+        inner,
+        cols: size,
+        rows: size,
+    };
 
     let robot = grid
         .get_coordinates(|t| *t == Tile::Robot)
@@ -114,8 +118,8 @@ impl Warehouse {
     pub fn debug_grid(&self) -> String {
         let mut s = String::new();
 
-        for x in 0..self.grid.size {
-            for y in 0..self.grid.size {
+        for x in 0..self.grid.rows {
+            for y in 0..self.grid.cols {
                 let ch = match self.grid.get((x, y)).expect("Valid") {
                     Tile::Wall => '#',
                     Tile::Box => 'O',
