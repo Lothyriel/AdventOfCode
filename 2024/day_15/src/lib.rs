@@ -19,7 +19,7 @@ fn parse_commands(input: &str) -> Vec<Direction> {
     commands
 }
 
-fn new_pos_unchecked(direction: &Direction, (x, y): (usize, usize)) -> Option<Point> {
+fn new_pos_unchecked(direction: &Direction, (x, y): Point) -> Option<Point> {
     let (dx, dy) = match direction {
         Direction::Up => (-1, 0),
         Direction::Down => (1, 0),
@@ -32,12 +32,13 @@ fn new_pos_unchecked(direction: &Direction, (x, y): (usize, usize)) -> Option<Po
 
 type Point = (usize, usize);
 
+#[derive(Debug)]
 enum Movement {
     Push(VecDeque<Point>),
     Normal(Point),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum Direction {
     Up,
     Down,
@@ -61,9 +62,9 @@ impl<T: PartialEq + Copy> Matrix<T> {
             .map(|(i, _)| (i / self.cols, i % self.cols))
     }
 
-    fn get(&self, (x, y): (usize, usize)) -> Option<&T> {
+    fn get(&self, (x, y): Point) -> Option<&T> {
         if x < self.rows && y < self.cols {
-            self.inner.get(x * self.rows + y)
+            self.inner.get(x * self.cols + y)
         } else {
             None
         }
@@ -72,7 +73,7 @@ impl<T: PartialEq + Copy> Matrix<T> {
     fn set(&mut self, (x, y): Point, value: T) -> Option<T> {
         let old = *self.get((x, y))?;
 
-        self.inner[x * self.rows + y] = value;
+        self.inner[x * self.cols + y] = value;
 
         Some(old)
     }

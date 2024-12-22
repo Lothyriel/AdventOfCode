@@ -101,7 +101,7 @@ impl Warehouse {
         }
     }
 
-    fn valid_push(&self, from: Point, direction: &Direction) -> Option<VecDeque<(usize, usize)>> {
+    fn valid_push(&self, from: Point, direction: &Direction) -> Option<VecDeque<Point>> {
         let mut pushes = VecDeque::from([from]);
 
         match self.valid_movement(from, direction)? {
