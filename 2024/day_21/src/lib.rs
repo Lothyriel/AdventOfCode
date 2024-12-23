@@ -6,20 +6,26 @@ use std::{
 pub mod part_1;
 pub mod part_2;
 
-fn get_complexity(code: &Code, directional_robots_count: usize) -> usize {
-    let seq = shortest_sequence(code, directional_robots_count);
+fn get_complexity(
+    code: &Code,
+    directional_robots_count: usize,
+    memo: &mut HashMap<State, usize>,
+) -> usize {
+    let seq = shortest_sequence(code, directional_robots_count, memo);
     let code_value = numeric_value(code);
 
     seq * code_value
 }
 
-fn shortest_sequence(code: &[NumericKey], move_robots: usize) -> usize {
-    let mut memo = HashMap::new();
-
+fn shortest_sequence(
+    code: &[NumericKey],
+    move_robots: usize,
+    memo: &mut HashMap<State, usize>,
+) -> usize {
     let init = (NumericKey::Activate, 0);
 
     let (_, total) = code.iter().fold(init, |(curr, total), next| {
-        let result = dijkstra(move_robots + 1, curr, *next, get_num_neighbours, &mut memo);
+        let result = dijkstra(move_robots + 1, curr, *next, get_num_neighbours, memo);
 
         (*next, total + result + 1)
     });
@@ -177,9 +183,11 @@ fn get_dir_neighbours(key: DirectionalKey) -> Vec<(DirectionalKey, DirectionalKe
 }
 
 fn get_codes_complexity(codes: &[Code], directional_robots_count: usize) -> usize {
+    let mut memo = HashMap::new();
+
     codes
         .iter()
-        .map(|code| get_complexity(code, directional_robots_count))
+        .map(|code| get_complexity(code, directional_robots_count, &mut memo))
         .sum()
 }
 
