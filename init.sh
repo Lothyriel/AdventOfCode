@@ -45,6 +45,7 @@ mod tests {
     #[test]
     fn example() {
         let input = r#""#;
+
         let result = day_x(input);
         assert_eq!(0, result);
     }

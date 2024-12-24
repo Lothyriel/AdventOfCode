@@ -59,8 +59,6 @@ mod tests {
     fn single_buyer_example() {
         let prices = generate_nth_numbers(123, 10);
 
-        println!("{prices:?}");
-
         let indicators = get_indicators(&prices);
 
         let biggest_profit = indicators.into_values().max_by_key(|&v| v);
