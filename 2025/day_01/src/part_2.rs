@@ -3,7 +3,7 @@ use crate::{Dial, parse};
 pub fn day_x(input: &str) -> isize {
     let mut dial = Dial::new();
 
-    parse(input).map(|r| dial.apply_rotation_steps(&r)).sum()
+    parse(input).map(|r| dial.apply_get_wrap_count(&r)).sum()
 }
 
 #[cfg(test)]

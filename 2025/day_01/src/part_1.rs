@@ -4,7 +4,7 @@ pub fn secret_entrance(input: &str) -> isize {
     let mut dial = Dial::new();
 
     parse(input).fold(0, |count, r| {
-        dial.apply_rotation(&r);
+        dial.apply(&r);
 
         if dial.pos == 0 { count + 1 } else { count }
     })

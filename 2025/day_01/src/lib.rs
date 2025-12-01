@@ -5,59 +5,78 @@ fn parse(input: &str) -> impl Iterator<Item = Rotation> {
     input.lines().map(|l| {
         let mut bytes = l.bytes();
 
-        let direction = bytes.next().unwrap();
+        let dir = bytes.next().unwrap();
 
-        let remaining = bytes.collect();
+        let rem = bytes.collect();
 
-        let distance = String::from_utf8(remaining).unwrap().parse().unwrap();
+        let dist = String::from_utf8(rem).unwrap().parse().unwrap();
 
-        match direction {
-            b'L' => Rotation::Left(distance),
-            b'R' => Rotation::Right(distance),
+        let dir = match dir {
+            b'L' => Direction::Left,
+            b'R' => Direction::Right,
             _ => panic!("invalid direction"),
-        }
+        };
+
+        Rotation { dir, dist }
     })
 }
 
 struct Dial {
     pos: isize,
+    size: isize,
 }
 
 impl Dial {
     fn new() -> Self {
-        Self { pos: 50 }
+        Self { pos: 50, size: 100 }
     }
 
-    fn apply_rotation(&mut self, rotation: &Rotation) {
-        let change = match rotation {
-            Rotation::Left(d) => self.pos - d,
-            Rotation::Right(d) => self.pos + d,
+    fn apply(&mut self, rotation: &Rotation) {
+        let change = match rotation.dir {
+            Direction::Left => self.pos - rotation.dist,
+            Direction::Right => self.pos + rotation.dist,
         };
 
-        self.pos = change % 100
+        self.pos = change % self.size
     }
 
-    // this is not good :(
-    fn apply_rotation_steps(&mut self, rotation: &Rotation) -> isize {
-        let (step, distance) = match rotation {
-            Rotation::Left(d) => (-1, d),
-            Rotation::Right(d) => (1, d),
-        };
+    fn apply_get_wrap_count(&mut self, rotation: &Rotation) -> isize {
+        let rem = rotation.dist % self.size;
+        let count = rotation.dist / self.size;
 
-        let mut count = 0;
-        for _ in 0..*distance {
-            self.pos = (self.pos + step) % 100;
+        match rotation.dir {
+            Direction::Left => {
+                let count = if self.pos + rem >= self.size {
+                    count + 1
+                } else {
+                    count
+                };
 
-            if self.pos == 0 {
-                count += 1;
+                self.pos = (self.pos + rem) % self.size;
+
+                count
+            }
+            Direction::Right => {
+                let wraps = if self.pos > 0 && self.pos - rem <= 0 {
+                    count + 1
+                } else {
+                    count
+                };
+
+                self.pos = ((self.pos - rem) % self.size + self.size) % self.size;
+
+                wraps
             }
         }
-
-        count
     }
 }
 
-enum Rotation {
-    Left(isize),
-    Right(isize),
+enum Direction {
+    Left,
+    Right,
+}
+
+struct Rotation {
+    dist: isize,
+    dir: Direction,
 }
