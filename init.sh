@@ -27,6 +27,12 @@ fi
 
 cd "day_$DAY" || exit
 
+cargo add lib --path ../../lib
+if [ $? -ne 0 ]; then
+	echo "Error: Failed to add the lib dependency with 'cargo add'."
+	exit 1
+fi
+
 cat >"src/lib.rs" <<'EOL'
 pub mod part_1;
 pub mod part_2;
