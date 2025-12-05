@@ -4,7 +4,7 @@ pub fn cafeteria(input: &str) -> usize {
     let (mut fresh, _) = parse(input);
     fresh.sort_by_key(|r| r.start);
 
-    let merged = fresh.iter().fold(Vec::new(), |mut acc: Vec<Range>, r| {
+    let merged = fresh.iter().fold(Vec::<Range>::new(), |mut acc, r| {
         match acc.last_mut() {
             Some(last) if r.start <= last.end => {
                 last.end = last.end.max(r.end);
