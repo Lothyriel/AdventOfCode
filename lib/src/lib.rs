@@ -76,4 +76,8 @@ impl<T> Matrix<T> {
 
         Some(old)
     }
+
+    pub fn down(&self, (x, y): Point) -> Option<&T> {
+        self.get_i((x as isize + 1, y as isize))
+    }
 }
