@@ -1,23 +1,19 @@
-use std::collections::HashMap;
+use lib::Dsu;
 
-use crate::{component_sizes, get_unique_pairs, parse};
+use crate::{get_unique_pairs, parse};
 
 pub fn playground(input: &str, steps: usize) -> usize {
     let boxes: Vec<_> = parse(input).collect();
 
     let pairs = get_unique_pairs(&boxes);
 
-    let mut graph = HashMap::new();
+    let mut dsu = Dsu::new(boxes.len());
 
     for &(_, i, j) in &pairs[..steps] {
-        graph.entry(i).or_insert_with(Vec::new).push(j);
-        graph.entry(j).or_insert_with(Vec::new).push(i);
+        dsu.union(i, j);
     }
 
-    let mut sizes = component_sizes(&graph, boxes.len());
-
-    sizes.sort_unstable_by(|a, b| b.cmp(a));
-    sizes.iter().take(3).product()
+    dsu.components().iter().take(3).product()
 }
 
 #[cfg(test)]

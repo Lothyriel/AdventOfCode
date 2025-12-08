@@ -1,5 +1,3 @@
-use std::collections::{HashMap, VecDeque};
-
 pub mod part_1;
 pub mod part_2;
 
@@ -30,39 +28,6 @@ fn get_unique_pairs(boxes: &[Box]) -> Vec<(isize, usize, usize)> {
 
     pairs.sort_unstable_by(|a, b| a.0.cmp(&b.0));
     pairs
-}
-
-fn component_sizes(graph: &HashMap<usize, Vec<usize>>, n: usize) -> Vec<usize> {
-    let mut visited = vec![false; n];
-    let mut sizes = Vec::new();
-
-    for start in 0..n {
-        if visited[start] {
-            continue;
-        }
-
-        let mut size = 0;
-        let mut queue = VecDeque::new();
-        queue.push_back(start);
-        visited[start] = true;
-
-        while let Some(u) = queue.pop_front() {
-            size += 1;
-
-            if let Some(neighbor) = graph.get(&u) {
-                for &v in neighbor {
-                    if !visited[v] {
-                        visited[v] = true;
-                        queue.push_back(v);
-                    }
-                }
-            }
-        }
-
-        sizes.push(size);
-    }
-
-    sizes
 }
 
 struct Box {

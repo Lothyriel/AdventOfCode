@@ -1,19 +1,16 @@
-use std::collections::HashMap;
+use lib::Dsu;
 
-use crate::{component_sizes, get_unique_pairs, parse};
+use crate::{get_unique_pairs, parse};
 
 pub fn playground(input: &str) -> usize {
     let boxes: Vec<_> = parse(input).collect();
 
     let pairs = get_unique_pairs(&boxes);
 
-    let mut graph = HashMap::new();
+    let mut dsu = Dsu::new(boxes.len());
 
     for &(_, i, j) in &pairs {
-        graph.entry(i).or_insert_with(Vec::new).push(j);
-        graph.entry(j).or_insert_with(Vec::new).push(i);
-
-        if component_sizes(&graph, boxes.len()).len() == 1 {
+        if dsu.union(i, j) && dsu.count() == 1 {
             return (boxes[i].x * boxes[j].x) as usize;
         }
     }
