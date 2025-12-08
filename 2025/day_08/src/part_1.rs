@@ -1,0 +1,60 @@
+use std::collections::HashMap;
+
+use crate::{component_sizes, get_unique_pairs, parse};
+
+pub fn playground(input: &str, steps: usize) -> usize {
+    let boxes: Vec<_> = parse(input).collect();
+
+    let pairs = get_unique_pairs(&boxes);
+
+    let mut graph = HashMap::new();
+
+    for &(_, i, j) in &pairs[..steps] {
+        graph.entry(i).or_insert_with(Vec::new).push(j);
+        graph.entry(j).or_insert_with(Vec::new).push(i);
+    }
+
+    let mut sizes = component_sizes(&graph, boxes.len());
+
+    sizes.sort_unstable_by(|a, b| b.cmp(a));
+    sizes.iter().take(3).product()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn example() {
+        let input = r#"162,817,812
+57,618,57
+906,360,560
+592,479,940
+352,342,300
+466,668,158
+542,29,236
+431,825,988
+739,650,466
+52,470,668
+216,146,977
+819,987,18
+117,168,530
+805,96,715
+346,949,466
+970,615,88
+941,993,340
+862,61,35
+984,92,344
+425,690,689"#;
+
+        let result = playground(input, 10);
+        assert_eq!(40, result);
+    }
+
+    #[test]
+    fn input() {
+        let input = include_str!("input");
+        let result = playground(input, 1000);
+        assert_eq!(81536, result);
+    }
+}
