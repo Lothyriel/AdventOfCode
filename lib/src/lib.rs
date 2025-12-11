@@ -1,3 +1,5 @@
+use itertools::Itertools;
+
 pub type Point = (usize, usize);
 
 #[derive(Debug)]
@@ -148,4 +150,10 @@ impl Dsu {
     pub fn count(&self) -> usize {
         self.count
     }
+}
+
+pub fn all_combinations<T>(items: &[T]) -> Vec<Vec<&T>> {
+    (1..=items.len())
+        .flat_map(|k| items.iter().combinations(k))
+        .collect()
 }
